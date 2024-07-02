@@ -1,4 +1,7 @@
+from typing import Any, Optional
+
 import torch
+from pytorch_lightning.utilities.types import STEP_OUTPUT
 
 from modules.ClassificationTask.ExampleModule import ExampleConvolution, ExampleClassifier
 from losses.ClassificationTask.ExampleLoss import ExampleLoss
@@ -24,7 +27,7 @@ class ExampleClassificationTask(pl.LightningModule):
 
         return logit
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx) -> STEP_OUTPUT:
         """
         Here you compute and return the training loss and some additional metrics for e.g.
         the progress bar or logger.
@@ -52,7 +55,7 @@ class ExampleClassificationTask(pl.LightningModule):
 
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch, batch_idx) -> Optional[STEP_OUTPUT]:
         """
         It is recommended to validate on single device to
         ensure each sample/batch gets evaluated exactly once.
@@ -72,6 +75,8 @@ class ExampleClassificationTask(pl.LightningModule):
         accuracy = torch.sum((labels == torch.argmax(logit, dim=1))).item() / (len(labels) * 1.0)
         self.log('Validation_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log('Validation Accuracy', accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+
+        return loss
 
     def configure_optimizers(self):
         lr = self.learning_rate
