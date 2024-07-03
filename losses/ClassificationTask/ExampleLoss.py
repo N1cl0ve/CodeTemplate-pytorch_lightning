@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class ExampleLoss(nn.Module):
+class CrossEntropyLoss(nn.Module):
     """
     An example module used for Image classification Model
     You can build your own module for your own model

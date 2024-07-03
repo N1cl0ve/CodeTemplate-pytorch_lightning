@@ -5,7 +5,7 @@ from torchvision import transforms, datasets
 import pytorch_lightning as pl
 
 
-class ExampleDataset(pl.LightningDataModule):
+class MNISTDataset(pl.LightningDataModule):
 
     def __init__(self,
                  data_dir: str,

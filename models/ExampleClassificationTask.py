@@ -4,11 +4,11 @@ import torch
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 
 from modules.ClassificationTask.ExampleModule import ExampleConvolution, ExampleClassifier
-from losses.ClassificationTask.ExampleLoss import ExampleLoss
+from losses.ClassificationTask.ExampleLoss import CrossEntropyLoss
 import pytorch_lightning as pl
 
 
-class ExampleClassificationTask(pl.LightningModule):
+class ExampleAlexNet(pl.LightningModule):
     """
     An example alex-net inherited from pl.LightningModule
     Use pytorch_lightning to build a general framework
@@ -19,7 +19,7 @@ class ExampleClassificationTask(pl.LightningModule):
         super().__init__()
         self.conv = ExampleConvolution()
         self.classifier = ExampleClassifier()
-        self.loss_fn = ExampleLoss()
+        self.loss_fn = CrossEntropyLoss()
 
     def forward(self, x):
         h = self.conv(x)
