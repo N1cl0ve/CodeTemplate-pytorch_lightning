@@ -1,0 +1,16 @@
+name: Alexnet-10c_1xb32_MNIST # {module_info}_{pretrain_info}_{training_info}_{data_info}, alexnet-10class_1gpux32batch_MNIST
+model:
+  target: models.ExampleClassificationTask.ExampleAlexNet
+  params: # params for __init__
+
+
+data:
+  target: ExampleDataset.MNISTDataset
+  params: # params for __init__
+
+lightning: # params for lightning
+  # base_learning_rate: for multiple gpu
+  learning_rate: 0.001
+  batch_size: 32
+  trainer:
+    accumulate_gard_batches: 1
