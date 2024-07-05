@@ -15,13 +15,12 @@ def get_parse(**parser_kwargs):
     # TODO: 确定要添加什么参数，一般来说是与任务有关超参数
 
     parser = argparse.ArgumentParser(**parser_kwargs)
-    parser.add_argument("-c", "--config", nargs=1, required=True)
+    parser.add_argument("-c", "--config", nargs="*", required=True)
     parser.add_argument("-r", "--reproducible", action="store_true")
     parser.add_argument("-s", "--seed", type=int, default=2024)
     parser.add_argument('--logtype', type=str, default="tensorboard", nargs="?", choices=["wandb", "tensorboard"])
     parser.add_argument("-p", "--project", help="name of new or path to existing project", default="Quantization")
     parser.add_argument("-d", "--debug", action="store_true")
-    parser.add_argument()
 
     return parser
 
@@ -69,7 +68,7 @@ def prepare_lightning(opt, config):
 
     if "base_learning_rate" in lightning_config:
         print("Using base_learning_rate & Configure learning rate According to batch_size!")
-        bs, base_lr = lightning_config.batch_size, lightning_config.base_learning_rate
+        bs, base_lr = config.data.batch_size, lightning_config.base_learning_rate
         learning_rate = accumulate_grad_batches * n_gpus * bs * base_lr
         lightning_config.learning_rate = learning_rate
     elif "learning_rate" in lightning_config:
@@ -145,7 +144,9 @@ def prepare_lightning(opt, config):
             }
         }
     }
-    trainer_kwargs["callbacks"] = [instantiate_from_config(setup_callback_cfg)] + [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
+    setup_callback_cfg = OmegaConf.create(setup_callback_cfg)
+    trainer_kwargs["callbacks"] = ([instantiate_from_config(setup_callback_cfg[k]) for k in setup_callback_cfg] +
+                                   [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg])
     trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
 
     return lightning_config, trainer
@@ -164,9 +165,8 @@ if __name__ == "__main__":
 
     if opt.reproducible and opt.seed:
         seed_everything(seed=opt.seed)
-        print(f"Seed everything to {opt.seed}")
 
-    config = OmegaConf.load(opt.config)
+    config = OmegaConf.load(opt.config[0])
 
     lightning_config, trainer = prepare_lightning(opt, config)
     model = prepare_model(opt, config, lightning_config)

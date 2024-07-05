@@ -15,10 +15,10 @@ class ExampleAlexNet(pl.LightningModule):
 
     """
 
-    def __init__(self):
+    def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.conv = ExampleConvolution()
-        self.classifier = ExampleClassifier()
+        self.conv = ExampleConvolution(in_channels)
+        self.classifier = ExampleClassifier(num_classes)
         self.loss_fn = CrossEntropyLoss()
 
     def forward(self, x):

@@ -19,12 +19,14 @@ class MNISTDataset(pl.LightningDataModule):
 
         self.train_transform = transforms.Compose(
             [
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,))
             ]
         )
         self.test_transform = transforms.Compose(
             [
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,))
             ]

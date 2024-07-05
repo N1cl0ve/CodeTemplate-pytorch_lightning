@@ -8,10 +8,10 @@ class ExampleConvolution(nn.Module):
     An example module used for Image classification Model
     You can build your own module for your own model
     """
-    def __init__(self):
+    def __init__(self, in_channels):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv2d(1, 96, kernel_size=11, stride=4, padding=1),
+            nn.Conv2d(in_channels, 96, kernel_size=11, stride=4, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2),
             nn.Conv2d(96, 256, kernel_size=5, padding=2),
@@ -36,7 +36,7 @@ class ExampleClassifier(nn.Module):
     An example module used for Image classification Model
     You can build your own module for your own model
     """
-    def __init__(self):
+    def __init__(self, num_classes):
         super().__init__()
         self.classifier = nn.Sequential(
             nn.Linear(6400, 4096),
@@ -45,7 +45,7 @@ class ExampleClassifier(nn.Module):
             nn.Linear(4096, 4096),
             nn.ReLU(),
             nn.Dropout(p=0.5),
-            nn.Linear(4096, 1000)
+            nn.Linear(4096, num_classes)
         )
 
     def forward(self, x):
