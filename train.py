@@ -25,11 +25,11 @@ def get_parse(**parser_kwargs):
     return parser
 
 
-def prepare_model(opt, config, lightning_config):
-    model = instantiate_from_config(config.model)
-    model.learning_rate = lightning_config.learning_rate
+def prepare_task(opt, config, lightning_config):
+    task = instantiate_from_config(config.task)
+    task.learning_rate = lightning_config.learning_rate
 
-    return model
+    return task
 
 
 def prepare_data(opt, config):
@@ -72,7 +72,7 @@ def prepare_lightning(opt, config):
 
     if "base_learning_rate" in lightning_config:
         print("Using base_learning_rate & Configure learning rate According to batch_size!")
-        bs, base_lr = config.data.batch_size, lightning_config.base_learning_rate
+        bs, base_lr = config.data.params.batch_size[0], lightning_config.base_learning_rate
         learning_rate = accumulate_grad_batches * n_gpus * bs * base_lr
         lightning_config.learning_rate = learning_rate
     elif "learning_rate" in lightning_config:
@@ -172,8 +172,8 @@ if __name__ == "__main__":
     config = OmegaConf.load(opt.config[0])
 
     lightning_config, trainer = prepare_lightning(opt, config)
-    model = prepare_model(opt, config, lightning_config)
+    task = prepare_task(opt, config, lightning_config)
     data = prepare_data(opt, config)
 
-    trainer.fit(model, data)
+    trainer.fit(task, data)
     # trainer.save_checkpoint("")
