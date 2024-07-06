@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 import torch
+from torch import nn as nn
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 
 from utils import instantiate_from_config
@@ -16,8 +17,8 @@ class ClassificationTask(pl.LightningModule):
 
     def __init__(self, *, model_config, loss_config):
         super().__init__()
-        self.model = instantiate_from_config(model_config)
-        self.loss_fn = instantiate_from_config(loss_config)
+        self.model: nn.Module = instantiate_from_config(model_config)
+        self.loss_fn: nn.Module = instantiate_from_config(loss_config)
 
     def forward(self, x):
         logit = self.model(x)
@@ -75,9 +76,7 @@ class ClassificationTask(pl.LightningModule):
 
     def configure_optimizers(self):
         lr = self.learning_rate
-        opt = torch.optim.Adam(list(self.conv.parameters()) +
-                               list(self.classifier.parameters()),
-                               lr=lr, betas=(0.5, 0.9))
+        opt = torch.optim.Adam(self.model.parameters(), lr=lr, betas=(0.5, 0.9))
         # scheduler = {
         #     "scheduler": torch.optim.lr_scheduler.MultiStepLR(opt, milestones=[12000, 24000]),
         #     "interval": "step",
