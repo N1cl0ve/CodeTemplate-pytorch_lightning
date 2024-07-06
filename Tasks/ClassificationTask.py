@@ -69,8 +69,8 @@ class ClassificationTask(pl.LightningModule):
         logit = self(inputs)
         loss = self.loss_fn(logit, labels)
         accuracy = torch.sum((labels == torch.argmax(logit, dim=1))).item() / (len(labels) * 1.0)
-        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log('val_Accuracy', accuracy, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        self.log('val_Accuracy', accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
 
         return loss
 
