@@ -6,14 +6,14 @@ import torch.cuda
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer, seed_everything
 import os
-import glob
+import pytorch_lightning.loggers.tensorboard
 
 from utils import instantiate_from_config
 
+now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+
 
 def get_parse(**parser_kwargs):
-    # TODO: 确定要添加什么参数，一般来说是与任务有关超参数
-
     parser = argparse.ArgumentParser(**parser_kwargs)
     parser.add_argument("-c", "--config", nargs="*", required=True)
     parser.add_argument("-r", "--reproducible", action="store_true")
@@ -50,13 +50,17 @@ def prepare_lightning(opt, config):
 
     for k in nondefault_trainer_args(opt):
         trainer_config[k] = getattr(opt, k)
-    if "gpus" not in trainer_config:
-        trainer_config["gpus"] = -1 if torch.cuda.is_available() else opt.gpus
-        n_gpus = torch.cuda.device_count() if trainer_config["gpus"] else opt.gpus
-    else:
-        n_gpus = trainer_config["gpus"]
+
+    if "accelerator" not in trainer_config:
+        if torch.cuda.is_available():
+            trainer_config["accelerator"] = "gpu"
+        else:
+            raise NotImplementedError("Train only on gpu!")
+    if "devices" not in trainer_config:
+        trainer_config["devices"] = torch.cuda.device_count()
     if "accumulate_grad_batches" not in trainer_config:
         trainer_config["accumulate_grad_batches"] = 1
+    n_gpus = trainer_config["devices"]
     accumulate_grad_batches = trainer_config["accumulate_grad_batches"]
     trainer_config["strategy"] = "ddp"
     trainer_config["precision"] = opt.precision
@@ -76,7 +80,6 @@ def prepare_lightning(opt, config):
     else:
         raise NotImplementedError("Please set learning rate in config.lightning!")
 
-    now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     name = now + '_' + config.name
     logdir = os.path.join('logs', name)
     ckptdir = os.path.join(logdir, "checkpoints")

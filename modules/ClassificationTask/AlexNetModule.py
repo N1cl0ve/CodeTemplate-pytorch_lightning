@@ -3,7 +3,7 @@ from torch import nn
 from torch.nn import functional as F
 
 
-class ExampleConvolution(nn.Module):
+class Convolution(nn.Module):
     """
     An example module used for Image classification Model
     You can build your own module for your own model
@@ -31,7 +31,7 @@ class ExampleConvolution(nn.Module):
         return self.conv(x)
 
 
-class ExampleClassifier(nn.Module):
+class Classifier(nn.Module):
     """
     An example module used for Image classification Model
     You can build your own module for your own model

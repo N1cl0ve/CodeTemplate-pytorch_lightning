@@ -1,13 +1,19 @@
-name: Alexnet-10c_1xb32_MNIST # {module_info}_{pretrain_info}_{training_info}_{data_info}, alexnet-10class_1gpux32batch_MNIST
-model:
-  target: models.ExampleClassificationTask.ExampleAlexNet
-  params: # params for __init__
-    in_channels: 1
-    num_classes: 10
+name: Alexnet-10c_1xb32_MNIST-224x224 # {module_info}_{pretrain_info}_{training_info}_{data_info}, alexnet-10class_1gpux32batch_MNIST
+Task:
+  target: Tasks.ClassificationTask.ClassificationTask
+  params:
+    model_config:
+      target: models.AlexNet.AlexNet
+      params: # params for __init__
+        in_channels: 1
+        num_classes: 10
+    loss_config:
+      target: losses.ClassificationTask.CrossEntropyLoss # torch.nn.CrossEntropy
+
 
 
 data:
-  target: datasets.ExampleDataset.MNISTDataset
+  target: datasets.MNIST.MNIST_Resize224x224
   params: # params for __init__
     data_dir: data
     batch_size:
@@ -17,7 +23,8 @@ data:
     train_val_split: 0.2
 
 lightning: # params for lightning
-  # base_learning_rate: for multiple gpu
-  learning_rate: 0.001
+  base_learning_rate: 4.5e-06
+  # learning_rate: 0.001
   trainer:
-    accumulate_gard_batches: 1
+    accelerator: gpu
+    accumulate_grad_batches: 1

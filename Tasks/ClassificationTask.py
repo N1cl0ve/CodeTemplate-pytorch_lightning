@@ -3,27 +3,24 @@ from typing import Any, Optional
 import torch
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 
-from modules.ClassificationTask.ExampleModule import ExampleConvolution, ExampleClassifier
-from losses.ClassificationTask.ExampleLoss import CrossEntropyLoss
+from utils import instantiate_from_config
 import pytorch_lightning as pl
 
 
-class ExampleAlexNet(pl.LightningModule):
+class ClassificationTask(pl.LightningModule):
     """
     An example alex-net inherited from pl.LightningModule
     Use pytorch_lightning to build a general framework
 
     """
 
-    def __init__(self, in_channels, num_classes):
+    def __init__(self, *, model_config, loss_config):
         super().__init__()
-        self.conv = ExampleConvolution(in_channels)
-        self.classifier = ExampleClassifier(num_classes)
-        self.loss_fn = CrossEntropyLoss()
+        self.model = instantiate_from_config(model_config)
+        self.loss_fn = instantiate_from_config(loss_config)
 
     def forward(self, x):
-        h = self.conv(x)
-        logit = self.classifier(h)
+        logit = self.model(x)
 
         return logit
 
@@ -44,7 +41,6 @@ class ExampleAlexNet(pl.LightningModule):
             - ``dict`` - A dictionary. Can include any keys, but must include the key ``'loss'``
             - ``None`` - Training will skip to the next batch.
         """
-
         inputs, labels = batch
         logit = self(inputs)
         loss = self.loss_fn(logit, labels)
@@ -68,13 +64,12 @@ class ExampleAlexNet(pl.LightningModule):
         Returns:
             None
         """
-
         inputs, labels = batch
         logit = self(inputs)
         loss = self.loss_fn(logit, labels)
         accuracy = torch.sum((labels == torch.argmax(logit, dim=1))).item() / (len(labels) * 1.0)
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        self.log('val_Accuracy', accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_Accuracy', accuracy, on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
         return loss
 
