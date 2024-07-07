@@ -1,0 +1,52 @@
+name: VQVAE-Stage1_1xb8_MNIST-256x256
+task:
+  base_learning_rate: 4.5e-6
+  target: Task.ImageCompression.VQGANBaseTask
+  params:
+    model_config:
+      target: models.ImageCompression.vqgan.vqgan.VQModel
+      params:
+        embed_dim: 256
+        n_embed: 1024
+        ddconfig:
+          double_z: False
+          z_channels: 256
+          resolution: 256
+          in_channels: 1 # Test on MNIST
+          out_ch: 1 # Test on MNIST
+          ch: 128
+          ch_mult: # num_down = len(ch_mult)-1
+          - 1
+          - 1
+          - 2
+          - 2
+          - 4
+          num_res_blocks: 2
+          attn_resolutions:
+          - 16
+          dropout: 0.0
+    loss_config:
+      target: losses.ImageCompression.vqgan.vqperceptual.VQLPIPSWithDiscriminator
+      params:
+        disc_conditional: False
+        disc_in_channels: 1 # Test on MNIST
+        disc_start: 250001
+        disc_weight: 0.8
+        codebook_weight: 1.0
+
+data:
+  target: datasets.MNIST.MNIST_Resize256x256
+  params: # params for __init__
+    data_dir: data
+    batch_size:
+    - 32
+    - 32
+    - 1
+    train_val_split: 0.2
+
+lightning: # params for lightning
+  base_learning_rate: 4.5e-06
+  # learning_rate: 0.001
+  trainer:
+    accelerator: gpu
+    accumulate_grad_batches: 1
