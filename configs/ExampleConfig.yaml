@@ -1,17 +1,15 @@
-name: Alexnet-10c_1xb32_MNIST-224x224
+name: AlexNet-10c_1xb32_MNIST-224x224
 # {module_info}_{pretrain_info}_{training_info}_{data_info}, alexnet-10class_1gpux32batch_MNIST
 task:
-  target: Tasks.ClassificationTask.ClassificationTask
+  target: Tasks.ImageClassification.ImageClassificationTask
   params:
     model_config:
-      target: models.AlexNet.AlexNet
+      target: models.ImageClassification.AlexNet
       params: # params for __init__
         in_channels: 1
         num_classes: 10
     loss_config:
       target: losses.ClassificationTask.CrossEntropyLoss.CrossEntropyLoss # torch.nn.CrossEntropy
-
-
 
 data:
   target: datasets.MNIST.MNIST_Resize224x224

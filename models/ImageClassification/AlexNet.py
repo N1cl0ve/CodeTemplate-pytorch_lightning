@@ -3,7 +3,7 @@ from typing import Any, Optional
 import torch
 from torch import nn as nn
 
-from modules.ClassificationTask.AlexNetModule import Convolution, Classifier
+from modules.ImageClassification.AlexNetModule import Convolution, Classifier
 
 
 class AlexNet(nn.Module):

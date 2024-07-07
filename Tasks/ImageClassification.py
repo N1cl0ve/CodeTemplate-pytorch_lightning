@@ -8,7 +8,7 @@ from utils import instantiate_from_config
 import pytorch_lightning as pl
 
 
-class ClassificationTask(pl.LightningModule):
+class ImageClassificationTask(pl.LightningModule):
     """
     An example alex-net inherited from pl.LightningModule
     Use pytorch_lightning to build a general framework
