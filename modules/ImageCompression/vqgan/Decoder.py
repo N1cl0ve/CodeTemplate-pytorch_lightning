@@ -2,8 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from layers import (AttnBlock, Downsample, Normalize, ResnetBlock, Upsample, nonlinearity)
-
+from .layers import (AttnBlock, Downsample, Normalize, ResnetBlock, Upsample, nonlinearity)
 
 class Decoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1, 2, 4, 8), num_res_blocks,

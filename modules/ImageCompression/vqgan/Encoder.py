@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from layers import (AttnBlock, Downsample, Normalize, ResnetBlock, Upsample, nonlinearity)
+from .layers import (AttnBlock, Downsample, Normalize, ResnetBlock, Upsample, nonlinearity)
 
 
 

@@ -11,7 +11,6 @@ from modules.ImageCompression.vqgan.Quantizer import VectorQuantizer2 as VectorQ
 class VQModel(nn.Module):
     def __init__(self,
                  ddconfig,
-                 lossconfig,
                  n_embed,
                  embed_dim,
                  ckpt_path=None,

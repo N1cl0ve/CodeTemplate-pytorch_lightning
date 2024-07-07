@@ -1,7 +1,6 @@
 name: VQVAE-Stage1_1xb8_MNIST-256x256
 task:
-  base_learning_rate: 4.5e-6
-  target: Task.ImageCompression.VQGANBaseTask
+  target: Tasks.ImageCompression.VQGANBaseTask
   params:
     model_config:
       target: models.ImageCompression.vqgan.vqgan.VQModel
